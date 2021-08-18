@@ -2,8 +2,6 @@
 //  rslr2.h
 //  RSAA
 //
-//  Created by muhammed oguzhan kulekci on 24.07.2021.
-//
 #include <immintrin.h>
 #include <math.h>
 
