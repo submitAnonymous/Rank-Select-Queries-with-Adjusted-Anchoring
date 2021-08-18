@@ -1,9 +1,6 @@
 //
 //  main.cpp
 //  RSAA
-//
-//  Created by muhammed oguzhan kulekci on 25.06.2021.
-//
 
 #include <iostream>
 #include <iostream>
