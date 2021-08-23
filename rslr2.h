@@ -274,7 +274,7 @@ uint64_t constructDS(unsigned int d, unsigned int m, unsigned int s, sdsl::bit_v
             }
         }
     }
-    std::cout << s << '\t' << 100.0 * (double)errorCount / (double)blockCount << '\t' ;// std::endl;
+    std::cout << "(s:" << s << '\t' << "Err. Rate:" << 100.0 * (double)errorCount / (double)blockCount << ")\t" ;// std::endl;
 
     superblockLRparams[superblockID+1].slope = superblockLRparams[superblockID].slope;
     superblockLRparams[superblockID+1].intercept = setbitCount;
