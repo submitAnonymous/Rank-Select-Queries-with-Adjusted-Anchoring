@@ -85,15 +85,6 @@ uint64_t prepareBenchmark(char* filename){
         for( ; a<inputBitmap->size();a++) (*inputBitmap)[a]=0; //pad with zeros, now the input is always a multiple of d
     }
     
-    
-// Construct the la_vector by allocating 6 bits per correction (bpc)
-//    la_6 = new la_vector<uint32_t, 6>(dataRead);
-//    std::cout << "Elements: " << la_6->size() << std::endl << "Bytes: " << la_6->size_in_bytes() << std::endl;
-
-    // Construct the la_vector by minimising the space
-    //la_opt = new la_vector<uint32_t,0>(dataRead);
-    //std::cout << "Bytes: " << la_opt->size_in_bytes() << std::endl;
-
     return dataRead.size();
 }
 
@@ -352,7 +343,7 @@ int main(int argc, char* argv[]) {
         std::cout <<  setbitRatio << '\t'; //std::endl;
         std::cout <<  inputBitmap->size() <<  '\t'; //std::endl;
         s = atoi(argv[4]);
-        benchmark(100000, inputBitmap->size(), setbitcount, (char*)"rndBmp.bin", s );
+        benchmark(1000000, inputBitmap->size(), setbitcount, (char*)"rndBmp.bin", s );
 
     }else{
         uint64_t setbitcount = prepareBenchmark(argv[2]);
@@ -363,29 +354,8 @@ int main(int argc, char* argv[]) {
         std::cout <<  setbitRatio << '\t'; //std::endl;
         std::cout <<  inputBitmap->size() <<  '\t'; //std::endl;
         s = atoi(argv[2]);
-        benchmark(100000, inputBitmap->size(), setbitcount, argv[3], s );
+        benchmark(1000000, inputBitmap->size(), setbitcount, argv[3], s );
     }
 
     return 0;
 }
-
-
-/*/test LA_6
-uint64_t sum8=0;
-start = std::chrono::high_resolution_clock::now();
-for(uint64_t i =0; i<testsize;i++){
-    sum8 += (*la_6).rank(testPosRank[i]+1);
-}
-stop = std::chrono::high_resolution_clock::now();
-cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
-
-start = std::chrono::high_resolution_clock::now();
-for(uint64_t i =0; i<testsize;i++){
-    sum6 += (*la_6).select(testPosSelect[i]);
-}
-stop = std::chrono::high_resolution_clock::now();
-cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
-
-cout <<  100.00 *   (double)((*la_6).size_in_bytes()*8.0 - bitmapLength )/  bitmapLength << "\t LA_6\t"  << endl;;
-//--------------------------------------------------------
-*/
