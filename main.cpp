@@ -120,8 +120,10 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
     std::uniform_int_distribution<uint64_t> uniSelect(1,bitmapSetBitsCount); // guaranteed unbiased uniformly distributed integers between 1 and bitmapSetBitsCount, inclusive
     for(uint64_t i=0;i <testsize;i++) {testPosRank[i] = uniRank(rng); testPosSelect[i] = uniSelect(rng);}
     
-    
+    std::cout << "R/S-scheme \t RANK in microsec. \t SELECT in microsec. \t OVERHEAD-space percentage \t" << std::endl;
+    std::cout << "---------- \t ----------------- \t ------------------- \t -------------------------- \t" << std::endl;
     // test RRR
+    std::cout << "RRR:" << '\t' ;
     rrrInput  = new rrr_vector<>(*inputBitmap);
     rrrRank   = new rrr_vector<>::rank_1_type(rrrInput);
     rrrSelect = new rrr_vector<>::select_1_type(rrrInput);
@@ -132,16 +134,16 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         sum2 += (*rrrRank)(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum2 += (*rrrSelect)(testPosSelect[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)(size_in_bytes(*rrrInput)*8.0 + size_in_bytes(*rrrRank)*8.0 + size_in_bytes(*rrrSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t";// RRR" << endl ;
+    std::cout <<  100.00 *   (double)(size_in_bytes(*rrrInput)*8.0 + size_in_bytes(*rrrRank)*8.0 + size_in_bytes(*rrrSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t" << std::endl ;
     delete rrrInput;
     delete rrrRank;
     delete rrrSelect;
@@ -149,6 +151,8 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
     
     
     // test SD
+    std::cout << "SD:" << '\t' ;
+
     sdInput   = new sd_vector<>(*inputBitmap);
     sdRank    = new sd_vector<>::rank_1_type(sdInput);
     sdSelect  = new sd_vector<>::select_1_type(sdInput);
@@ -159,16 +163,16 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         sum3 += (*sdRank)(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum3 += (*sdSelect)(testPosSelect[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)(size_in_bytes(*sdInput)*8.0 + size_in_bytes(*sdRank)*8.0 + size_in_bytes(*sdSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t";// SD" << endl ;
+    std::cout <<  100.00 *   (double)(size_in_bytes(*sdInput)*8.0 + size_in_bytes(*sdRank)*8.0 + size_in_bytes(*sdSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t" << std::endl ;
     delete sdInput;
     delete sdRank;
     delete sdSelect;
@@ -177,7 +181,7 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
     
         
     // test V1 RANK + MCL SELECT
-    
+    std::cout << "V1+MCL:" << '\t' ;
     v1Rank    = new rank_support_v<1>(inputBitmap);
     mclSelect = new select_support_mcl<1>(inputBitmap);
     uint64_t sum5=0;
@@ -186,49 +190,52 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         sum5 += (*v1Rank)(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum5 += (*mclSelect)(testPosSelect[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)(size_in_bytes(*v1Rank)*8.0 + size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << "\t";//V1+MCL\t";
-  // cout <<  100.00 *   (double)(size_in_bytes(*v1Rank)*8.0                                 ) /  bitmapLength << "\t V1 \t";
-  //  cout <<  100.00 *   (double)(                             size_in_bytes(*mclSelect)*8.0 ) / bitmapLength << "\t MCL \t" << endl;
+    std::cout <<  100.00 *   (double)(size_in_bytes(*v1Rank)*8.0 + size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << "\t";
+    std::cout <<  100.00 *   (double)(size_in_bytes(*v1Rank)*8.0                                 ) /  bitmapLength << "\t -> V1-space \t";
+    std::cout <<  100.00 *   (double)(                             size_in_bytes(*mclSelect)*8.0 ) / bitmapLength << "\t -> MCL-space" << std::endl;
     delete v1Rank;
     //--------------------------------------------------------
     
     
     
     // test V5 RANK + MCL SELECT
+    std::cout << "V5+MCL:" << '\t' ;
+
     v5Rank    = new rank_support_v5<>(inputBitmap);
-   
     uint64_t sum6=0;
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum6 += (*v5Rank)(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum6 += (*mclSelect)(testPosSelect[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)(size_in_bytes(*v5Rank)*8.0 + size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << "\t";// V5+MCL\t";
-    //cout <<  100.00 *   (double)(size_in_bytes(*v5Rank)*8.0                                 ) /  bitmapLength << "\t V5 \t";
-    //cout <<  100.00 *   (double)(                             size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << "\t MCL \t" << endl;
+    std::cout <<  100.00 *   (double)(size_in_bytes(*v5Rank)*8.0 + size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << "\t";// V5+MCL\t";
+    std::cout <<  100.00 *   (double)(size_in_bytes(*v5Rank)*8.0                                 ) /  bitmapLength << " (V5-space) \t";
+    std::cout <<  100.00 *   (double)(                             size_in_bytes(*mclSelect)*8.0 ) /  bitmapLength << " (MCL-space) " << std::endl;
     delete v5Rank;
     delete mclSelect;
     //--------------------------------------------------------
    
     // test INTERLEAVED
+    std::cout << "IL:" << '\t' ;
+
     ilInput   = new bit_vector_il<>(*inputBitmap);
     ilRank    = new rank_support_il<>(ilInput);
     ilSelect  = new select_support_il<>(ilInput);
@@ -239,21 +246,22 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         sum4 += (*ilRank)(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum4 += (*ilSelect)(testPosSelect[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)(size_in_bytes(*ilInput)*8.0 + size_in_bytes(*ilRank)*8.0 + size_in_bytes(*ilSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t";// IL" << endl ;
+    std::cout <<  100.00 *   (double)(size_in_bytes(*ilInput)*8.0 + size_in_bytes(*ilRank)*8.0 + size_in_bytes(*ilSelect)*8.0 -  bitmapLength) /  bitmapLength << "\t" << std::endl ;
     //--------------------------------------------------------
    
     
     unsigned int d = 256, m = 256 ;
     constructDS(d, m ,s, inputBitmap);
+    std::cout << "RSAA:" << '\t' ;
 
     /*
     // correctness test
@@ -287,7 +295,7 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
                 sum1 += rankLR(testPosRank[i]);
         }
         stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
     
     
         start = std::chrono::high_resolution_clock::now();
@@ -296,11 +304,13 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         }
         stop = std::chrono::high_resolution_clock::now();
     
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
-    cout <<  100.00 *   (double) totalspaceusageDSinBITS/bitmapLength<< "\t";// AA" << endl ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout <<  100.00 *   (double) totalspaceusageDSinBITS/bitmapLength << "\t" << std::endl ;
   
     //---------------------------------------------------------------------
     //test LA_OPT
+    std::cout << "LA(OPT):" << '\t' ;
+
     auto dataRead = read_data_binary<uint32_t, uint32_t>(filename);
     la_opt = new la_vector<uint32_t,0>(dataRead);
 
@@ -310,16 +320,16 @@ void benchmark(uint64_t testsize, uint32_t bitmapLength, uint32_t bitmapSetBitsC
         sum7 += (*la_opt).rank(testPosRank[i]+1);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
     start = std::chrono::high_resolution_clock::now();
     for(uint64_t i =0; i<testsize;i++){
         sum6 += (*la_opt).select(testPosSelect[i]);
     }
     stop = std::chrono::high_resolution_clock::now();
-    cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>( stop - start ).count() / double(testsize) << '\t' ;
 
-    cout <<  100.00 *   (double)((*la_opt).size_in_bytes()*8.0-bitmapLength) /  bitmapLength << endl; //"\t LA_OPT\t"  << endl;;
+    std::cout <<  100.00 *   (double)((*la_opt).size_in_bytes()*8.0-bitmapLength) /  bitmapLength << std::endl; 
     delete la_opt;
     //--------------------------------------------------------
    
@@ -340,8 +350,8 @@ int main(int argc, char* argv[]) {
         
         //if ( (setbitRatio<0.2) || (setbitRatio>0.5) ) return 1;
         
-        std::cout <<  setbitRatio << '\t'; //std::endl;
-        std::cout <<  inputBitmap->size() <<  '\t'; //std::endl;
+        std::cout <<  "Set bit ratio: " << setbitRatio << '\t'<< std::endl;
+        std::cout <<  "Input bitmap length:" << inputBitmap->size() <<  '\t' << std::endl;
         s = atoi(argv[4]);
         benchmark(1000000, inputBitmap->size(), setbitcount, (char*)"rndBmp.bin", s );
 
@@ -351,8 +361,8 @@ int main(int argc, char* argv[]) {
         
         //if ( (setbitRatio<0.2) || (setbitRatio>0.5) ) return 1;
         
-        std::cout <<  setbitRatio << '\t'; //std::endl;
-        std::cout <<  inputBitmap->size() <<  '\t'; //std::endl;
+        std::cout <<  "Set bit ratio: " << setbitRatio << '\t'<< std::endl;
+        std::cout <<  "Input bitmap length:" << inputBitmap->size() <<  '\t' << std::endl;
         s = atoi(argv[2]);
         benchmark(1000000, inputBitmap->size(), setbitcount, argv[3], s );
     }
