@@ -10,3 +10,5 @@ Your CPU should be supporting the popcnt,pdep, tzcnt instrcutions.
 
 The 
 
+You can download the datasets GOV2, URL, 5GRAM, DNA from the links provided in https://github.com/aboffa/Learned-Rank-Select-ALENEX21. 
+You can feed the files directly to the RSAA program via the command line 
