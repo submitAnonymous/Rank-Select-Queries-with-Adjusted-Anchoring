@@ -363,8 +363,8 @@ int main(int argc, char* argv[]) {
         
         std::cout <<  "Set bit ratio: " << setbitRatio << '\t'<< std::endl;
         std::cout <<  "Input bitmap length:" << inputBitmap->size() <<  '\t' << std::endl;
-        s = atoi(argv[2]);
-        benchmark(1000000, inputBitmap->size(), setbitcount, argv[3], s );
+        s = atoi(argv[3]);
+        benchmark(1000000, inputBitmap->size(), setbitcount, argv[2], s );
     }
 
     return 0;
